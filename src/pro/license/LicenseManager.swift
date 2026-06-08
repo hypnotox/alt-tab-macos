@@ -174,6 +174,10 @@ class LicenseManager {
     }
 
     func computeState() -> LicenseState {
+        // LOCAL BUILD PATCH: this is a self-compiled build (GPLv3 grants the right to do so).
+        // Always report `.pro` so every Pro feature is unlocked, no degradation occurs, and the
+        // timed Pro-transition prompts stay suppressed (ProTransitionScheduler short-circuits on `.pro`).
+        return .pro
         if keychain.value(account: Self.keychainKeyAccount) != nil {
             let lastValidationResult = defaults.bool(forKey: "lastValidationResult")
             guard lastValidationResult else { return .trialExpired }
