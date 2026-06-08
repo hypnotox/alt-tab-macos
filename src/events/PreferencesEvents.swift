@@ -81,9 +81,12 @@ class PreferencesEvents {
 
     private static func applyUpdatePolicyPreference() {
         GeneralTab.policyLock = true
-        let policy = Preferences.updatePolicy
-        App.updaterController?.updater.automaticallyDownloadsUpdates = policy == .autoInstall
-        App.updaterController?.updater.automaticallyChecksForUpdates = policy == .autoInstall || policy == .autoCheck
+        // LOCAL BUILD PATCH: never auto-check or auto-download. This is a self-compiled fork build;
+        // updates come from rebuilding (git rebase onto a new upstream tag), so Sparkle must never
+        // offer to replace this patched binary with the official licensed release. The stored
+        // `updatePolicy` preference is intentionally ignored. Manual "Check for updates" still works.
+        App.updaterController?.updater.automaticallyDownloadsUpdates = false
+        App.updaterController?.updater.automaticallyChecksForUpdates = false
         GeneralTab.policyLock = false
     }
 }
