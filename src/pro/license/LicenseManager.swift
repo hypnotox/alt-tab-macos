@@ -173,11 +173,15 @@ class LicenseManager {
         }
     }
 
+    /// LOCAL BUILD PATCH: this is a self-compiled build (GPLv3 grants the right to do so).
+    /// When true, `computeState()` always reports `.pro`, which unlocks every Pro feature, prevents
+    /// degradable preferences from downgrading, and suppresses the timed Pro-transition prompts
+    /// (ProTransitionScheduler short-circuits on `.pro`). Held as a stored property (not an inline
+    /// literal) so the upstream logic below stays compiler-reachable under `-warnings-as-errors`.
+    static let forceProForLocalBuild = true
+
     func computeState() -> LicenseState {
-        // LOCAL BUILD PATCH: this is a self-compiled build (GPLv3 grants the right to do so).
-        // Always report `.pro` so every Pro feature is unlocked, no degradation occurs, and the
-        // timed Pro-transition prompts stay suppressed (ProTransitionScheduler short-circuits on `.pro`).
-        return .pro
+        if Self.forceProForLocalBuild { return .pro }
         if keychain.value(account: Self.keychainKeyAccount) != nil {
             let lastValidationResult = defaults.bool(forKey: "lastValidationResult")
             guard lastValidationResult else { return .trialExpired }
